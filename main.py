@@ -189,8 +189,10 @@ swaps = [
 if __name__ == "__main__":
         
     cprint(f'\n============================================= hodlmod.eth =============================================', 'cyan')
+
+    cprint(f'\nsubscribe to us : https://t.me/hodlmodeth', 'magenta')
     
-    with open("private_keys.txt", "r") as f:
+    with open("arbitrum/private_keys.txt", "r") as f:
         keys_list = [row.strip() for row in f]
 
     for privatekey in keys_list:
