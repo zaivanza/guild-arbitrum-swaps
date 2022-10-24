@@ -1,20 +1,8 @@
 from web3 import Web3
 import requests
-import random
 from termcolor import cprint
 import time
 import json
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from termcolor import cprint
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys 
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
-import pyperclip
-import pyotp
 
 RPC = {
         # '1': '',
@@ -200,9 +188,8 @@ swaps = [
 
 if __name__ == "__main__":
     
-    with open("arbitrum/private_keys.txt", "r") as f:
+    with open("private_keys.txt", "r") as f:
         keys_list = [row.strip() for row in f]
-
 
     for privatekey in keys_list:
         tx_list.clear()
@@ -222,7 +209,7 @@ if __name__ == "__main__":
             json.dump(tx_list, file, indent=4, ensure_ascii=False)
 
         for tx in tx_list:
-            API_KEY = '2ZVXJWNF76AKGP8BAQD5BH1CIWTY4EEIJ2'
+            API_KEY = 'your_api_key'
             status = check_status_transaction(tx['tx_hash'], API_KEY)
 
             to_symbol = tx['symbol']
@@ -235,6 +222,4 @@ if __name__ == "__main__":
                     inch_myc(privatekey, amount_to_swap, to_token_address, to_symbol)
                 else:
                     web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
-
-
 
