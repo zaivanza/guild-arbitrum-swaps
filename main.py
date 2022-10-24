@@ -187,12 +187,16 @@ swaps = [
 
 
 if __name__ == "__main__":
+        
+    cprint(f'\n============================================= hodlmod.eth =============================================', 'cyan')
     
     with open("private_keys.txt", "r") as f:
         keys_list = [row.strip() for row in f]
 
     for privatekey in keys_list:
         tx_list.clear()
+        
+        cprint(f'\n=============== start : {privatekey} ===============', 'white')
 
         fees = []
         for swap in swaps:
