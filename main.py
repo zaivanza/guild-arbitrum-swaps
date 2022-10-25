@@ -374,9 +374,10 @@ if __name__ == "__main__":
             fees.append(amount_to_swap)
             web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
             time.sleep(3)
-
-        inch_myc(privatekey, 0.00001, '0xC74fE4c715510Ec2F8C61d70D397B32043F55Abe', 'MYC')
+                
         web_hop(privatekey)
+        time.sleep(2)
+        inch_myc(privatekey, 0.00001, '0xC74fE4c715510Ec2F8C61d70D397B32043F55Abe', 'MYC')
 
         with open("test.json", "w") as file:
             json.dump(tx_list, file, indent=4, ensure_ascii=False)
