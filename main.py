@@ -25,7 +25,7 @@ def check_status_transaction(tx, API_KEY):
 
 tx_list = []
 
-def inch_myc(privatekey, amount_to_swap, to_token_address, to_symbol):
+def inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol):
     try:
         
         def intToDecimal(qty, decimal):
@@ -51,13 +51,9 @@ def inch_myc(privatekey, amount_to_swap, to_token_address, to_symbol):
 
         fromTokenAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" # ETH
         withdrawAccount = address_wallet
-        destReceiver = address_wallet
-        slippage = 3
-        gasLimit = 1000000
         amount = intToDecimal(amount_to_swap, 18) 
-        gasPrice = intToDecimal(0.0000000001, 18)
 
-        _1inchurl = f'https://api.1inch.exchange/v4.0/42161/swap?fromTokenAddress={fromTokenAddress}&toTokenAddress={to_token_address}&amount={amount}&fromAddress={withdrawAccount}&destReceiver={destReceiver}&slippage={slippage}&gasPrice={gasPrice}&gasLimit={gasLimit}'
+        _1inchurl = f'https://api.1inch.io/v4.0/42161/swap?fromTokenAddress={fromTokenAddress}&toTokenAddress={to_token_address}&amount={amount}&fromAddress={withdrawAccount}&slippage=1'
         json_data = get_api_call_data(_1inchurl)
 
         nonce = web3.eth.getTransactionCount(withdrawAccount)
@@ -129,7 +125,7 @@ def web_sushi_guild(privatekey, amount, to_token_address, to_symbol):
         cprint(f'\n>>> swap {to_symbol} : https://arbiscan.io/tx/{web3.toHex(tx_hash)}', 'green')
     except Exception as error:
         cprint(f'\n>>> {to_symbol} | {error}', 'red')
-        
+
 def web_hop(privatekey):
     def approve_1():
         try:
@@ -292,7 +288,6 @@ def web_hop(privatekey):
     add_liquidity()
 
 
-
 swaps = [
     {'address': '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
     'symbol': 'LINK',
@@ -338,32 +333,29 @@ swaps = [
     'symbol': 'SYN',
     'amount': 0.00001},
 
-    {'address': '0xd3f1Da62CAFB7E7BC6531FF1ceF6F414291F03D3',
-    'symbol': 'DBL',
-    'amount': 0.00001},
-
     {'address': '0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE',
     'symbol': 'ELK',
     'amount': 0.00001},
-        
-    {'address': '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
-    'symbol': 'USDC',
-    'amount': 0.00002},
+
+    {'address': '0xB5de3f06aF62D8428a8BF7b4400Ea42aD2E0bc53',
+    'symbol': 'BRC',
+    'amount': 0.000005},
 ]
 
 
 if __name__ == "__main__":
-        
+
     cprint(f'\n============================================= hodlmod.eth =============================================', 'cyan')
 
     cprint(f'\nsubscribe to us : https://t.me/hodlmodeth', 'magenta')
     
-    with open("private_keys.txt", "r") as f:
+    with open("arbitrum/private_keys.txt", "r") as f:
         keys_list = [row.strip() for row in f]
+
 
     for privatekey in keys_list:
         tx_list.clear()
-        
+
         cprint(f'\n=============== start : {privatekey} ===============', 'white')
 
         fees = []
@@ -374,13 +366,11 @@ if __name__ == "__main__":
             fees.append(amount_to_swap)
             web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
             time.sleep(3)
-                
-        web_hop(privatekey)
-        time.sleep(2)
-        inch_myc(privatekey, 0.00001, '0xC74fE4c715510Ec2F8C61d70D397B32043F55Abe', 'MYC')
 
-        with open("test.json", "w") as file:
-            json.dump(tx_list, file, indent=4, ensure_ascii=False)
+        time.sleep(3)
+        web_hop(privatekey)
+        inch_swap(privatekey, 0.00001, '0xC74fE4c715510Ec2F8C61d70D397B32043F55Abe', 'MYC')
+        inch_swap(privatekey, 0.000001, '0xd3f1Da62CAFB7E7BC6531FF1ceF6F414291F03D3', 'DBL')
 
         for tx in tx_list:
             API_KEY = 'your_api_key'
@@ -392,8 +382,12 @@ if __name__ == "__main__":
 
             if status == '0':
                 cprint(f"\nfail : {to_symbol} | {to_token_address} | {amount_to_swap}", 'red')
-                if to_symbol == 'MYC':
-                    inch_myc(privatekey, amount_to_swap, to_token_address, to_symbol)
+                if to_symbol in ['MYC', 'DBL']:
+                    inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol)
                 else:
                     web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
 
+        time.sleep(3)
+        
+
+     
