@@ -14,7 +14,7 @@ RPC = {
         # '43114': '',  # https://support.avax.network/en/articles/4626956-how-do-i-set-up-metamask-on-avalanche
     }
 
-gasLimit = 1000000
+gasLimit = 4000000
 
 def check_status_transaction(tx, API_KEY):
     result = []
@@ -95,7 +95,6 @@ def web_sushi_guild(privatekey, amount, to_token_address, to_symbol):
         def intToDecimal(qty, decimal):
             return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
-        gasLimit = 1000000
         gasPrice = intToDecimal(0.0000000001, 18)
         nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -144,7 +143,6 @@ def web_hop(privatekey):
             def intToDecimal(qty, decimal):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
-            gasLimit = 1000000
             gasPrice = intToDecimal(0.0000000001, 18)
             nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -178,7 +176,6 @@ def web_hop(privatekey):
                 def intToDecimal(qty, decimal):
                     return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
-                gasLimit = 1000000
                 gasPrice = intToDecimal(0.0000000001, 18)
                 nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -215,7 +212,6 @@ def web_hop(privatekey):
             def intToDecimal(qty, decimal):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
-            gasLimit = 1000000
             gasPrice = intToDecimal(0.0000000001, 18)
             nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -255,7 +251,6 @@ def web_hop(privatekey):
             def intToDecimal(qty, decimal):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
-            gasLimit = 1000000
             gasPrice = intToDecimal(0.0000000001, 18)
             nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -292,7 +287,6 @@ def web_hop(privatekey):
             def intToDecimal(qty, decimal):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
-            gasLimit = 1000000
             gasPrice = intToDecimal(0.0000000001, 18)
             nonce = web3.eth.get_transaction_count(address_wallet)
 
