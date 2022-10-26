@@ -369,10 +369,6 @@ swaps = [
     'symbol': 'ELK',
     'amount': 0.00001},
 
-    {'address': '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
-    'symbol': 'USDC',
-    'amount': 0.00002},
-
     {'address': '0xB5de3f06aF62D8428a8BF7b4400Ea42aD2E0bc53',
     'symbol': 'BRC',
     'amount': 0.000005},
