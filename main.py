@@ -394,6 +394,8 @@ if __name__ == "__main__":
             fees.append(amount_to_swap)
             inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol)
             time.sleep(3)
+                
+        web_hop(privatekey)
 
         # cprint(f'\ncosts without commission | {round(sum(fees), 5)} eth = {sum(fees) * 1450} $')
 
