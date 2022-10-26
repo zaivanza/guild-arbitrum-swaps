@@ -4,5 +4,5 @@
 
 1. Регистрируемся на https://arbiscan.io/login и создаем api key : https://arbiscan.io/myapikey
 2. Сохраняем оба файла.
-3. Копируем свой api key и вставляем в переменную API_KEY в файле main.py (432 строчка)
+3. Копируем свой api key и вставляем в переменную API_KEY в файле main.py
 4. Вставляем в файл private_keys.txt свои ptivate key от кошельков. Кол-во >= 1. Каждый приватник с новой строки.
