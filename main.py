@@ -95,6 +95,7 @@ def web_sushi_guild(privatekey, amount, to_token_address, to_symbol):
         def intToDecimal(qty, decimal):
             return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
+        gasLimit = 1000000
         gasPrice = intToDecimal(0.0000000001, 18)
         nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -143,6 +144,7 @@ def web_hop(privatekey):
             def intToDecimal(qty, decimal):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
+            gasLimit = 1000000
             gasPrice = intToDecimal(0.0000000001, 18)
             nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -179,6 +181,7 @@ def web_hop(privatekey):
             def intToDecimal(qty, decimal):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
+            gasLimit = 1000000
             gasPrice = intToDecimal(0.0000000001, 18)
             nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -218,6 +221,7 @@ def web_hop(privatekey):
             def intToDecimal(qty, decimal):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
+            gasLimit = 1000000
             gasPrice = intToDecimal(0.0000000001, 18)
             nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -254,6 +258,7 @@ def web_hop(privatekey):
             def intToDecimal(qty, decimal):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
+            gasLimit = 1000000
             gasPrice = intToDecimal(0.0000000001, 18)
             nonce = web3.eth.get_transaction_count(address_wallet)
 
@@ -276,6 +281,7 @@ def web_hop(privatekey):
         except Exception as error:
             cprint(f'\n>>> HOP add_liquidity | {error}', 'red')
 
+    time.sleep(2)
     approve_1()
     time.sleep(2)
     swap()
@@ -302,10 +308,6 @@ swaps = [
     'symbol': 'DPX',
     'amount': 0.00003},
 
-    {'address': '0x289ba1701C2F088cf0faf8B3705246331cB8A839',
-    'symbol': 'LPT',
-    'amount': 0.00001},
-
     {'address': '0x1622bF67e6e5747b81866fE0b85178a93C7F86e3',
     'symbol': 'UMAMI',
     'amount': 0.00002},
@@ -328,17 +330,38 @@ swaps = [
 
     {'address': '0x080F6AEd32Fc474DD5717105Dba5ea57268F46eb',
     'symbol': 'SYN',
-    'amount': 0.00001},
+    'amount': 0.00002},
 
     {'address': '0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE',
     'symbol': 'ELK',
     'amount': 0.00001},
+
+    {'address': '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+    'symbol': 'USDC',
+    'amount': 0.00002},
 
     {'address': '0xB5de3f06aF62D8428a8BF7b4400Ea42aD2E0bc53',
     'symbol': 'BRC',
     'amount': 0.000005},
 ]
 
+swaps_1inch = [
+    {'address': '0xC74fE4c715510Ec2F8C61d70D397B32043F55Abe',
+    'symbol': 'MYC',
+    'amount': 0.00001},
+
+    {'address': '0xd3f1Da62CAFB7E7BC6531FF1ceF6F414291F03D3',
+    'symbol': 'DBL',
+    'amount': 0.000001},
+
+    {'address': '0x289ba1701C2F088cf0faf8B3705246331cB8A839',
+    'symbol': 'LPT',
+    'amount': 0.00001},
+
+    {'address': '0xdE903E2712288A1dA82942DDdF2c20529565aC30',
+    'symbol': 'SWPR',
+    'amount': 0.000001},
+]
 
 if __name__ == "__main__":
 
@@ -364,10 +387,15 @@ if __name__ == "__main__":
             web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
             time.sleep(3)
 
-        time.sleep(3)
-        web_hop(privatekey)
-        inch_swap(privatekey, 0.00001, '0xC74fE4c715510Ec2F8C61d70D397B32043F55Abe', 'MYC')
-        inch_swap(privatekey, 0.000001, '0xd3f1Da62CAFB7E7BC6531FF1ceF6F414291F03D3', 'DBL')
+        for swap in swaps_1inch:
+            amount_to_swap = swap['amount']
+            to_token_address = swap['address']
+            to_symbol = swap['symbol']
+            fees.append(amount_to_swap)
+            inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol)
+            time.sleep(3)
+
+        # cprint(f'\ncosts without commission | {round(sum(fees), 5)} eth = {sum(fees) * 1450} $')
 
         for tx in tx_list:
             API_KEY = 'your_api_key'
@@ -385,6 +413,5 @@ if __name__ == "__main__":
                     web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
 
         time.sleep(3)
-        
 
      
