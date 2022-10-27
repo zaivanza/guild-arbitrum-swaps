@@ -322,73 +322,73 @@ def web_hop(privatekey):
 swaps = [
     {'address': '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
     'symbol': 'LINK',
-    'amount': 0.00001},
+    'amount': round(random.uniform(0.0000100, 0.0000115), 8)}, 
 
     {'address': '0x539bdE0d7Dbd336b79148AA742883198BBF60342',
     'symbol': 'MAGIC',
-    'amount': 0.00001},
+    'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
 
     {'address': '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a',
     'symbol': 'GMX',
-    'amount': 0.00004},
+    'amount': round(random.uniform(0.0000400, 0.0000415), 8)},
 
     {'address': '0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55',
     'symbol': 'DPX',
-    'amount': 0.00003},
+    'amount': round(random.uniform(0.0000300, 0.0000315), 8)},
 
     {'address': '0x1622bF67e6e5747b81866fE0b85178a93C7F86e3',
     'symbol': 'UMAMI',
-    'amount': 0.00002},
+    'amount': round(random.uniform(0.0000300, 0.0000315), 8)},
 
     {'address': '0x10393c20975cF177a3513071bC110f7962CD67da',
     'symbol': 'JONES',
-    'amount': 0.00001},
+    'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
 
     {'address': '0x5575552988A3A80504bBaeB1311674fCFd40aD4B',
     'symbol': 'SPA',
-    'amount': 0.00001},
+    'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
 
     {'address': '0x51318B7D00db7ACc4026C88c3952B66278B6A67F',
     'symbol': 'PLS',
-    'amount': 0.00001},
+    'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
 
     {'address': '0xa684cd057951541187f288294a1e1C2646aA2d24',
     'symbol': 'VSTA',
-    'amount': 0.00001},
+    'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
 
     {'address': '0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE',
     'symbol': 'ELK',
-    'amount': 0.00001},
+    'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
+
+    {'address': '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+    'symbol': 'USDC',
+    'amount': round(random.uniform(0.0000200, 0.0000215), 8)},
 
     {'address': '0xB5de3f06aF62D8428a8BF7b4400Ea42aD2E0bc53',
     'symbol': 'BRC',
-    'amount': 0.000005},
-        
-    {'address': '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
-    'symbol': 'USDC',
-    'amount': 0.00002},
+    'amount': round(random.uniform(0.00000500, 0.00000515), 8)},
 ]
 
 swaps_1inch = [
     {'address': '0xC74fE4c715510Ec2F8C61d70D397B32043F55Abe',
     'symbol': 'MYC',
-    'amount': 0.00001},
+    'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
 
     {'address': '0xd3f1Da62CAFB7E7BC6531FF1ceF6F414291F03D3',
     'symbol': 'DBL',
-    'amount': 0.000001},
+    'amount': round(random.uniform(0.00000300, 0.00000400), 8)},
 
     {'address': '0x289ba1701C2F088cf0faf8B3705246331cB8A839',
     'symbol': 'LPT',
-    'amount': 0.00001},
+    'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
 
     {'address': '0xdE903E2712288A1dA82942DDdF2c20529565aC30',
     'symbol': 'SWPR',
-    'amount': 0.000001},
-        
+    'amount': round(random.uniform(0.00000100, 0.00000115), 8)},
+
     {'address': '0x080F6AEd32Fc474DD5717105Dba5ea57268F46eb',
     'symbol': 'SYN',
-    'amount': 0.00002},
+    'amount': round(random.uniform(0.0000200, 0.0000215), 8)},
 ]
 
 if __name__ == "__main__":
