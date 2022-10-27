@@ -355,10 +355,6 @@ swaps = [
     'symbol': 'VSTA',
     'amount': 0.00001},
 
-    {'address': '0x080F6AEd32Fc474DD5717105Dba5ea57268F46eb',
-    'symbol': 'SYN',
-    'amount': 0.00002},
-
     {'address': '0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE',
     'symbol': 'ELK',
     'amount': 0.00001},
@@ -388,6 +384,10 @@ swaps_1inch = [
     {'address': '0xdE903E2712288A1dA82942DDdF2c20529565aC30',
     'symbol': 'SWPR',
     'amount': 0.000001},
+        
+    {'address': '0x080F6AEd32Fc474DD5717105Dba5ea57268F46eb',
+    'symbol': 'SYN',
+    'amount': 0.00002},
 ]
 
 if __name__ == "__main__":
