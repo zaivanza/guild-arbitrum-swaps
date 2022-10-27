@@ -309,13 +309,13 @@ def web_hop(privatekey):
         except Exception as error:
             cprint(f'\n>>> HOP add_liquidity | {error}', 'red')
 
-    time.sleep(2)
+    time.sleep(random.randint(2, 3))
     approve_1()
-    time.sleep(2)
+    time.sleep(random.randint(2, 3))
     swap()
-    time.sleep(2)
+    time.sleep(random.randint(2, 3))
     approve_2()
-    time.sleep(2)
+    time.sleep(random.randint(2, 3))
     add_liquidity()
 
 swaps = [
@@ -412,7 +412,7 @@ if __name__ == "__main__":
             to_symbol = swap['symbol']
             fees.append(amount_to_swap)
             web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
-            time.sleep(3)
+            time.sleep(random.randint(2, 4))
 
         for swap in swaps_1inch:
             amount_to_swap = swap['amount']
@@ -420,7 +420,7 @@ if __name__ == "__main__":
             to_symbol = swap['symbol']
             fees.append(amount_to_swap)
             inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol)
-            time.sleep(3)
+            time.sleep(random.randint(2, 4))
         
         web_hop(privatekey)
 
