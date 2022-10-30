@@ -403,6 +403,9 @@ if __name__ == "__main__":
 
     for privatekey in keys_list:
         tx_list.clear()
+        
+        random.shuffle(swaps)
+        random.shuffle(swaps_1inch)
 
         cprint(f'\n=============== start : {privatekey} ===============', 'white')
 
