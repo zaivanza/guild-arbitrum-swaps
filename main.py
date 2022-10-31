@@ -17,17 +17,6 @@ RPC = {
 
 gasLimit = 4000000
 
-def check_status_transaction(tx, API_KEY):
-    result = []
-    link = f'https://api.arbiscan.io/api?module=transaction&action=gettxreceiptstatus&txhash={tx}&apikey={API_KEY}'
-    response = requests.get(url=link)
-    result.append(response.json())
-
-    status = result[0]['result']['status']
-    return status
-
-tx_list = []
-
 def inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol):
     try:
         
@@ -68,15 +57,6 @@ def inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol):
         signed_tx = web3.eth.account.signTransaction(tx, privatekey)
         tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
-        token = {
-            'address': to_token_address,
-            'symbol': to_symbol,
-            'amount': amount_to_swap,
-            'tx_hash': web3.toHex(tx_hash)
-        }
-
-        tx_list.append(token)
-
         cprint(f'\n>>> swap {to_symbol} : https://arbiscan.io/tx/{web3.toHex(tx_hash)}', 'green')
     except Exception as error:
         cprint(f'\n>>> {address_wallet} | {to_symbol} | {error}', 'red')
@@ -114,15 +94,6 @@ def web_sushi_guild(privatekey, amount, to_token_address, to_symbol):
             
         signed_txn = web3.eth.account.sign_transaction(contract_txn, private_key=privatekey)
         tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
-
-        token = {
-            'address': to_token_address,
-            'symbol': to_symbol,
-            'amount': amount_to_swap,
-            'tx_hash': web3.toHex(tx_hash)
-        }
-
-        tx_list.append(token)
 
         cprint(f'\n>>> swap {to_symbol} : https://arbiscan.io/tx/{web3.toHex(tx_hash)}', 'green')
     except Exception as error:
@@ -409,41 +380,21 @@ if __name__ == "__main__":
 
         cprint(f'\n=============== start : {privatekey} ===============', 'white')
 
-        fees = []
         for swap in swaps:
             amount_to_swap = swap['amount']
             to_token_address = swap['address']
             to_symbol = swap['symbol']
-            fees.append(amount_to_swap)
             web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
-            time.sleep(random.randint(2, 4))
+            time.sleep(random.randint(3, 6))
 
         for swap in swaps_1inch:
             amount_to_swap = swap['amount']
             to_token_address = swap['address']
             to_symbol = swap['symbol']
-            fees.append(amount_to_swap)
             inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol)
-            time.sleep(random.randint(2, 4))
+            time.sleep(random.randint(3, 6))
         
         web_hop(privatekey)
-
-        # cprint(f'\ncosts without commission | {round(sum(fees), 5)} eth = {sum(fees) * 1450} $')
-
-        for tx in tx_list:
-            API_KEY = 'your_api_key'
-            status = check_status_transaction(tx['tx_hash'], API_KEY)
-
-            to_symbol = tx['symbol']
-            to_token_address = tx['address']
-            amount_to_swap = tx['amount']
-
-            if status == '0':
-                cprint(f"\nfail : {to_symbol} | {to_token_address} | {amount_to_swap}", 'red')
-                if to_symbol in ['MYC', 'DBL', 'LPT', 'SWPR']:
-                    inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol)
-                else:
-                    web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
 
         time.sleep(3)
 
