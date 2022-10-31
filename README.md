@@ -7,5 +7,5 @@
 3. Копируем свой api key и вставляем в переменную API_KEY в файле main.py
 4. Вставляем в файл private_keys.txt свои ptivate key от кошельков. Кол-во >= 1. Каждый приватник с новой строки.
 
-Канал : https://t.me/hodlmodeth
-Чат для вопросов : https://t.me/code_hodlmodeth
+Канал : https://t.me/hodlmodeth.
+Чат для вопросов : https://t.me/code_hodlmodeth.
