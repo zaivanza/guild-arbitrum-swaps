@@ -342,6 +342,10 @@ swaps = [
     {'address': '0xdE903E2712288A1dA82942DDdF2c20529565aC30',
     'symbol': 'SWPR',
     'amount': round(random.uniform(0.00000100, 0.00000115), 8)},
+        
+    {'address': '0x080F6AEd32Fc474DD5717105Dba5ea57268F46eb',
+    'symbol': 'SYN',
+    'amount': round(random.uniform(0.0000200, 0.0000215), 8)},
 ]
 
 swaps_1inch = [
@@ -356,10 +360,6 @@ swaps_1inch = [
     {'address': '0x289ba1701C2F088cf0faf8B3705246331cB8A839',
     'symbol': 'LPT',
     'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
-
-    {'address': '0x080F6AEd32Fc474DD5717105Dba5ea57268F46eb',
-    'symbol': 'SYN',
-    'amount': round(random.uniform(0.0000200, 0.0000215), 8)},
 ]
 
 if __name__ == "__main__":
