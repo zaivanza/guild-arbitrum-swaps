@@ -229,15 +229,6 @@ def web_sushi_guild(privatekey, amount, to_token_address, to_symbol):
             signed_txn = web3.eth.account.sign_transaction(contract_txn, private_key=privatekey)
             tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
 
-            token = {
-                'address': to_token_address,
-                'symbol': to_symbol,
-                'amount': amount_to_swap,
-                'tx_hash': web3.toHex(tx_hash)
-            }
-
-            tx_list.append(token)
-
             cprint(f'\n>>> swap {to_symbol} : https://arbiscan.io/tx/{web3.toHex(tx_hash)}', 'green')
 
         except Exception as error:
@@ -532,7 +523,6 @@ if __name__ == "__main__":
         id_users = [row.strip() for row in f]
 
     for privatekey in keys_list:
-        tx_list.clear()
 
         random.shuffle(swaps)
         random.shuffle(swaps_1inch)
