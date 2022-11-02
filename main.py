@@ -519,9 +519,6 @@ if __name__ == "__main__":
     with open("private_keys.txt", "r") as f:
         keys_list = [row.strip() for row in f]
 
-    with open("id_users.txt", "r") as f:
-        id_users = [row.strip() for row in f]
-
     for privatekey in keys_list:
 
         random.shuffle(swaps)
