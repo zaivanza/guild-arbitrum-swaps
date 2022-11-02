@@ -234,7 +234,7 @@ def web_sushi_guild(privatekey, amount, to_token_address, to_symbol):
         except Exception as error:
             cprint(f'\n>>> {to_symbol} | {error}', 'red')
 
-def web_hop(privatekey, nonce):
+def web_hop(privatekey):
     def approve_1():
         try:
 
@@ -251,7 +251,7 @@ def web_hop(privatekey, nonce):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
             gasPrice = intToDecimal(0.0000000001, 18)
-            # nonce = web3.eth.get_transaction_count(address_wallet)
+            nonce = web3.eth.get_transaction_count(address_wallet)
 
             contract_txn = contract.functions.approve(
             '0x10541b07d8Ad2647Dc6cD67abd4c03575dade261', 
@@ -320,7 +320,7 @@ def web_hop(privatekey, nonce):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
             gasPrice = intToDecimal(0.0000000001, 18)
-            # nonce = web3.eth.get_transaction_count(address_wallet)
+            nonce = web3.eth.get_transaction_count(address_wallet)
             amount = random.randint(10300, 11000)
 
             contract_txn = contract.functions.swap(
@@ -334,7 +334,7 @@ def web_hop(privatekey, nonce):
             'value': 0, 
             'gas': gasLimit,
             'gasPrice': gasPrice,
-            'nonce': nonce+1,
+            'nonce': nonce,
             })
                 
             signed_txn = web3.eth.account.sign_transaction(contract_txn, private_key=privatekey)
@@ -360,7 +360,7 @@ def web_hop(privatekey, nonce):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
             gasPrice = intToDecimal(0.0000000001, 18)
-            # nonce = web3.eth.get_transaction_count(address_wallet)
+            nonce = web3.eth.get_transaction_count(address_wallet)
 
             contract_txn = contract.functions.approve(
             '0x10541b07d8Ad2647Dc6cD67abd4c03575dade261', 
@@ -370,7 +370,7 @@ def web_hop(privatekey, nonce):
             'value': 0, 
             'gas': gasLimit,
             'gasPrice': gasPrice,
-            'nonce': nonce+2,
+            'nonce': nonce,
             })
                 
             signed_txn = web3.eth.account.sign_transaction(contract_txn, private_key=privatekey)
@@ -396,7 +396,7 @@ def web_hop(privatekey, nonce):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
             gasPrice = intToDecimal(0.0000000001, 18)
-            # nonce = web3.eth.get_transaction_count(address_wallet)
+            nonce = web3.eth.get_transaction_count(address_wallet)
 
             contract_txn = contract.functions.addLiquidity(
             [10000, 10000], # amounts
@@ -407,7 +407,7 @@ def web_hop(privatekey, nonce):
             'value': 0, 
             'gas': gasLimit,
             'gasPrice': gasPrice,
-            'nonce': nonce+3,
+            'nonce': nonce,
             })
                 
             signed_txn = web3.eth.account.sign_transaction(contract_txn, private_key=privatekey)
@@ -553,8 +553,7 @@ if __name__ == "__main__":
             inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol)
             time.sleep(random.randint(4, 10))
         
-        nonce = web3.eth.getTransactionCount(address_wallet)
-        web_hop(privatekey, nonce)
+        web_hop(privatekey)
         time.sleep(random.randint(4, 10))
 
         for swap in swaps_1inch_sell:
