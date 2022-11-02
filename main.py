@@ -42,13 +42,12 @@ def inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol):
         address_wallet = account.address
 
         fromTokenAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" # ETH
-        withdrawAccount = address_wallet
         amount = intToDecimal(amount_to_swap, 18) 
 
-        _1inchurl = f'https://api.1inch.io/v4.0/42161/swap?fromTokenAddress={fromTokenAddress}&toTokenAddress={to_token_address}&amount={amount}&fromAddress={withdrawAccount}&slippage=1'
+        _1inchurl = f'https://api.1inch.io/v4.0/42161/swap?fromTokenAddress={fromTokenAddress}&toTokenAddress={to_token_address}&amount={amount}&fromAddress={address_wallet}&slippage=1'
         json_data = get_api_call_data(_1inchurl)
 
-        nonce = web3.eth.getTransactionCount(withdrawAccount)
+        nonce = web3.eth.getTransactionCount(address_wallet)
         tx = json_data['tx']
         tx['nonce'] = nonce
         tx['to'] = Web3.toChecksumAddress(tx['to'])
@@ -56,6 +55,94 @@ def inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol):
         tx['value'] = int(tx['value'])
         signed_tx = web3.eth.account.signTransaction(tx, privatekey)
         tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+
+        cprint(f'\n>>> swap {to_symbol} : https://arbiscan.io/tx/{web3.toHex(tx_hash)}', 'green')
+    except Exception as error:
+        cprint(f'\n>>> {address_wallet} | {to_symbol} | {error}', 'red')
+
+def inch_swap_approve(privatekey, amount, fromTokenAddress, to_symbol):
+    try:
+        
+        def get_api_call_data(url):
+            try: 
+                call_data = requests.get(url)
+            except Exception as e:
+                print(e)
+                return get_api_call_data(url)
+            try:
+                api_data = call_data.json()
+                return api_data
+            except Exception as e: 
+                print(call_data.text) 
+
+        ChainUrl = "https://arb1.arbitrum.io/rpc"
+        web3 = Web3(Web3.HTTPProvider(ChainUrl))
+        account = web3.eth.account.privateKeyToAccount(privatekey)
+        address_wallet = account.address
+
+        _1inchurl = f'https://api.1inch.io/v4.0/42161/approve/transaction?tokenAddress={fromTokenAddress}&amount={amount}'
+        json_data = get_api_call_data(_1inchurl)
+
+        nonce = web3.eth.getTransactionCount(address_wallet)
+        tx = {
+            "nonce": nonce,
+            "to": web3.toChecksumAddress(json_data["to"]),
+            "data": json_data["data"],
+            "gasPrice": web3.eth.gas_price,
+            "gas": gasLimit,
+        }
+
+        signed_tx = web3.eth.account.signTransaction(tx, privatekey)
+        tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+
+        cprint(f'\n>>> approve {to_symbol} : https://arbiscan.io/tx/{web3.toHex(tx_hash)}', 'green')
+    except Exception as error:
+        cprint(f'\n>>> {address_wallet} | {to_symbol} | {error}', 'red')
+
+def inch_swap_sell(privatekey, amount_to_swap, fromTokenAddress, to_symbol):
+    try:
+        
+        def intToDecimal(qty, decimal):
+            return int(qty * int("".join(["1"] + ["0"]*decimal)))
+        def decimalToInt(price, decimal):
+            return price/ int("".join((["1"]+ ["0"]*decimal)))
+        def get_api_call_data(url):
+            try: 
+                call_data = requests.get(url)
+            except Exception as e:
+                print(e)
+                return get_api_call_data(url)
+            try:
+                api_data = call_data.json()
+                return api_data
+            except Exception as e: 
+                print(call_data.text) 
+
+        ChainUrl = "https://arb1.arbitrum.io/rpc"
+        web3 = Web3(Web3.HTTPProvider(ChainUrl))
+        account = web3.eth.account.privateKeyToAccount(privatekey)
+        address_wallet = account.address
+
+        to_token_address = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" # ETH
+        amount = intToDecimal(amount_to_swap, 18) 
+
+        inch_swap_approve(privatekey, amount, fromTokenAddress, to_symbol)
+
+        _1inchurl = f'https://api.1inch.io/v4.0/42161/swap?fromTokenAddress={fromTokenAddress}&toTokenAddress={to_token_address}&amount={amount}&fromAddress={address_wallet}&slippage=3'
+        json_data = get_api_call_data(_1inchurl)
+
+        with open("order_book.json", "w") as file:
+            json.dump(json_data, file, indent=4, ensure_ascii=False)
+
+        nonce = web3.eth.getTransactionCount(address_wallet)
+        tx = json_data['tx']
+        tx['nonce'] = nonce
+        tx['to'] = Web3.toChecksumAddress(tx['to'])
+        tx['gasPrice'] = int(tx['gasPrice'])
+        tx['value'] = int(tx['value'])
+        signed_tx = web3.eth.account.signTransaction(tx, privatekey)
+        tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+
 
         cprint(f'\n>>> swap {to_symbol} : https://arbiscan.io/tx/{web3.toHex(tx_hash)}', 'green')
     except Exception as error:
@@ -77,7 +164,7 @@ def web_sushi_guild(privatekey, amount, to_token_address, to_symbol):
             return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
         gasPrice = intToDecimal(0.0000000001, 18)
-        nonce = web3.eth.get_transaction_count(address_wallet)
+        nonce = web3.eth.get_transaction_count(address_wallet) 
 
         contract_txn = contract.functions.swapExactETHForTokens(
         0, # amountOutMin
@@ -97,9 +184,55 @@ def web_sushi_guild(privatekey, amount, to_token_address, to_symbol):
 
         cprint(f'\n>>> swap {to_symbol} : https://arbiscan.io/tx/{web3.toHex(tx_hash)}', 'green')
     except Exception as error:
-        cprint(f'\n>>> {to_symbol} | {error}', 'red')
 
-def web_hop(privatekey):
+        try:
+            time.sleep(10)
+            RPC = "https://arb1.arbitrum.io/rpc"
+            web3 = Web3(Web3.HTTPProvider(RPC))
+            account = web3.eth.account.privateKeyToAccount(privatekey)
+            address_wallet = account.address
+            contractToken = Web3.toChecksumAddress('0x1b02da8cb0d097eb8d57a175b88c7d8b47997506')
+            ABI = '[{"inputs":[{"internalType":"address","name":"_factory","type":"address"},{"internalType":"address","name":"_WETH","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"WETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"},{"internalType":"uint256","name":"amountADesired","type":"uint256"},{"internalType":"uint256","name":"amountBDesired","type":"uint256"},{"internalType":"uint256","name":"amountAMin","type":"uint256"},{"internalType":"uint256","name":"amountBMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"addLiquidity","outputs":[{"internalType":"uint256","name":"amountA","type":"uint256"},{"internalType":"uint256","name":"amountB","type":"uint256"},{"internalType":"uint256","name":"liquidity","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amountTokenDesired","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"addLiquidityETH","outputs":[{"internalType":"uint256","name":"amountToken","type":"uint256"},{"internalType":"uint256","name":"amountETH","type":"uint256"},{"internalType":"uint256","name":"liquidity","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"factory","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"reserveIn","type":"uint256"},{"internalType":"uint256","name":"reserveOut","type":"uint256"}],"name":"getAmountIn","outputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"reserveIn","type":"uint256"},{"internalType":"uint256","name":"reserveOut","type":"uint256"}],"name":"getAmountOut","outputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"}],"name":"getAmountsIn","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"}],"name":"getAmountsOut","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountA","type":"uint256"},{"internalType":"uint256","name":"reserveA","type":"uint256"},{"internalType":"uint256","name":"reserveB","type":"uint256"}],"name":"quote","outputs":[{"internalType":"uint256","name":"amountB","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountAMin","type":"uint256"},{"internalType":"uint256","name":"amountBMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"removeLiquidity","outputs":[{"internalType":"uint256","name":"amountA","type":"uint256"},{"internalType":"uint256","name":"amountB","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"removeLiquidityETH","outputs":[{"internalType":"uint256","name":"amountToken","type":"uint256"},{"internalType":"uint256","name":"amountETH","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"removeLiquidityETHSupportingFeeOnTransferTokens","outputs":[{"internalType":"uint256","name":"amountETH","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"bool","name":"approveMax","type":"bool"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"removeLiquidityETHWithPermit","outputs":[{"internalType":"uint256","name":"amountToken","type":"uint256"},{"internalType":"uint256","name":"amountETH","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"bool","name":"approveMax","type":"bool"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"removeLiquidityETHWithPermitSupportingFeeOnTransferTokens","outputs":[{"internalType":"uint256","name":"amountETH","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountAMin","type":"uint256"},{"internalType":"uint256","name":"amountBMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"bool","name":"approveMax","type":"bool"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"removeLiquidityWithPermit","outputs":[{"internalType":"uint256","name":"amountA","type":"uint256"},{"internalType":"uint256","name":"amountB","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapETHForExactTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactETHForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactETHForTokensSupportingFeeOnTransferTokens","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForETH","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForETHSupportingFeeOnTransferTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForTokensSupportingFeeOnTransferTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"amountInMax","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapTokensForExactETH","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"amountInMax","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapTokensForExactTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]'
+            contract = web3.eth.contract(address=contractToken, abi=ABI)
+            spend = Web3.toChecksumAddress('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1') # WETH
+
+            def intToDecimal(qty, decimal):
+                return int(qty * int("".join(["1"] + ["0"]*decimal)))
+
+            gasPrice = intToDecimal(0.0000000001, 18)
+            nonce = web3.eth.get_transaction_count(address_wallet) 
+
+            contract_txn = contract.functions.swapExactETHForTokens(
+            0, # amountOutMin
+            [spend, to_token_address], 
+            address_wallet, # receiver
+            (int(time.time()) + 10000) # deadline
+            ).buildTransaction({
+            'from': address_wallet,
+            'value': web3.toWei(amount,'ether'), 
+            'gas': gasLimit,
+            'gasPrice': gasPrice,
+            'nonce': nonce,
+            })
+                
+            signed_txn = web3.eth.account.sign_transaction(contract_txn, private_key=privatekey)
+            tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+
+            token = {
+                'address': to_token_address,
+                'symbol': to_symbol,
+                'amount': amount_to_swap,
+                'tx_hash': web3.toHex(tx_hash)
+            }
+
+            tx_list.append(token)
+
+            cprint(f'\n>>> swap {to_symbol} : https://arbiscan.io/tx/{web3.toHex(tx_hash)}', 'green')
+
+        except Exception as error:
+            cprint(f'\n>>> {to_symbol} | {error}', 'red')
+
+def web_hop(privatekey, nonce):
     def approve_1():
         try:
 
@@ -116,7 +249,7 @@ def web_hop(privatekey):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
             gasPrice = intToDecimal(0.0000000001, 18)
-            nonce = web3.eth.get_transaction_count(address_wallet)
+            # nonce = web3.eth.get_transaction_count(address_wallet)
 
             contract_txn = contract.functions.approve(
             '0x10541b07d8Ad2647Dc6cD67abd4c03575dade261', 
@@ -185,12 +318,13 @@ def web_hop(privatekey):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
             gasPrice = intToDecimal(0.0000000001, 18)
-            nonce = web3.eth.get_transaction_count(address_wallet)
+            # nonce = web3.eth.get_transaction_count(address_wallet)
+            amount = random.randint(10300, 11000)
 
             contract_txn = contract.functions.swap(
             0, 
             1,
-            11000, # amount
+            amount, 
             0, # minDy
             (int(time.time()) + 10000) # deadline
             ).buildTransaction({
@@ -198,7 +332,7 @@ def web_hop(privatekey):
             'value': 0, 
             'gas': gasLimit,
             'gasPrice': gasPrice,
-            'nonce': nonce,
+            'nonce': nonce+1,
             })
                 
             signed_txn = web3.eth.account.sign_transaction(contract_txn, private_key=privatekey)
@@ -224,7 +358,7 @@ def web_hop(privatekey):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
             gasPrice = intToDecimal(0.0000000001, 18)
-            nonce = web3.eth.get_transaction_count(address_wallet)
+            # nonce = web3.eth.get_transaction_count(address_wallet)
 
             contract_txn = contract.functions.approve(
             '0x10541b07d8Ad2647Dc6cD67abd4c03575dade261', 
@@ -234,7 +368,7 @@ def web_hop(privatekey):
             'value': 0, 
             'gas': gasLimit,
             'gasPrice': gasPrice,
-            'nonce': nonce,
+            'nonce': nonce+2,
             })
                 
             signed_txn = web3.eth.account.sign_transaction(contract_txn, private_key=privatekey)
@@ -260,7 +394,7 @@ def web_hop(privatekey):
                 return int(qty * int("".join(["1"] + ["0"]*decimal)))
 
             gasPrice = intToDecimal(0.0000000001, 18)
-            nonce = web3.eth.get_transaction_count(address_wallet)
+            # nonce = web3.eth.get_transaction_count(address_wallet)
 
             contract_txn = contract.functions.addLiquidity(
             [10000, 10000], # amounts
@@ -271,7 +405,7 @@ def web_hop(privatekey):
             'value': 0, 
             'gas': gasLimit,
             'gasPrice': gasPrice,
-            'nonce': nonce,
+            'nonce': nonce+3,
             })
                 
             signed_txn = web3.eth.account.sign_transaction(contract_txn, private_key=privatekey)
@@ -281,14 +415,15 @@ def web_hop(privatekey):
         except Exception as error:
             cprint(f'\n>>> HOP add_liquidity | {error}', 'red')
 
-    time.sleep(random.randint(2, 3))
+    time.sleep(random.randint(4, 10))
     approve_1()
-    time.sleep(random.randint(2, 3))
+    time.sleep(random.randint(4, 10))
     swap()
-    time.sleep(random.randint(2, 3))
+    time.sleep(random.randint(4, 10))
     approve_2()
-    time.sleep(random.randint(2, 3))
+    time.sleep(random.randint(4, 10))
     add_liquidity()
+  
 
 swaps = [
     {'address': '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
@@ -338,11 +473,11 @@ swaps = [
     {'address': '0xB5de3f06aF62D8428a8BF7b4400Ea42aD2E0bc53',
     'symbol': 'BRC',
     'amount': round(random.uniform(0.00000500, 0.00000515), 8)},
-        
+
     {'address': '0xdE903E2712288A1dA82942DDdF2c20529565aC30',
     'symbol': 'SWPR',
     'amount': round(random.uniform(0.00000100, 0.00000115), 8)},
-        
+
     {'address': '0x080F6AEd32Fc474DD5717105Dba5ea57268F46eb',
     'symbol': 'SYN',
     'amount': round(random.uniform(0.0000200, 0.0000215), 8)},
@@ -355,12 +490,23 @@ swaps_1inch = [
 
     {'address': '0xd3f1Da62CAFB7E7BC6531FF1ceF6F414291F03D3',
     'symbol': 'DBL',
-    'amount': round(random.uniform(0.00000300, 0.00000400), 8)},
+    'amount': round(random.uniform(0.00100, 0.00105), 8)},
 
     {'address': '0x289ba1701C2F088cf0faf8B3705246331cB8A839',
     'symbol': 'LPT',
-    'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
+    'amount': round(random.uniform(0.00100, 0.00105), 8)},
 ]
+
+swaps_1inch_sell = [
+    {'address': '0xd3f1Da62CAFB7E7BC6531FF1ceF6F414291F03D3',
+    'symbol': 'DBL',
+    'amount': round(random.uniform(19.500, 20.000), 8)},
+
+    {'address': '0x289ba1701C2F088cf0faf8B3705246331cB8A839',
+    'symbol': 'LPT',
+    'amount': round(random.uniform(0.168, 0.169), 8)},
+]
+
 
 if __name__ == "__main__":
 
@@ -368,33 +514,54 @@ if __name__ == "__main__":
 
     cprint(f'\nsubscribe to us : https://t.me/hodlmodeth', 'magenta')
     
-    with open("private_keys.txt", "r") as f:
+    with open("arbitrum/private_keys.txt", "r") as f:
         keys_list = [row.strip() for row in f]
 
+    with open("arbitrum/id_users.txt", "r") as f:
+        id_users = [row.strip() for row in f]
 
     for privatekey in keys_list:
-        
+        tx_list.clear()
+
         random.shuffle(swaps)
         random.shuffle(swaps_1inch)
+        random.shuffle(swaps_1inch_sell)
 
         cprint(f'\n=============== start : {privatekey} ===============', 'white')
+
+        ChainUrl = "https://arb1.arbitrum.io/rpc"
+        web3 = Web3(Web3.HTTPProvider(ChainUrl))
+        account = web3.eth.account.privateKeyToAccount(privatekey)
+        address_wallet = account.address
+
+        tx_cost = []
 
         for swap in swaps:
             amount_to_swap = swap['amount']
             to_token_address = swap['address']
             to_symbol = swap['symbol']
+            tx_cost.append(amount_to_swap)
             web_sushi_guild(privatekey, amount_to_swap, to_token_address, to_symbol)
-            time.sleep(random.randint(3, 6))
+            time.sleep(random.randint(4, 10))
 
         for swap in swaps_1inch:
             amount_to_swap = swap['amount']
             to_token_address = swap['address']
             to_symbol = swap['symbol']
+            tx_cost.append(amount_to_swap)
             inch_swap(privatekey, amount_to_swap, to_token_address, to_symbol)
-            time.sleep(random.randint(3, 6))
+            time.sleep(random.randint(4, 10))
         
-        web_hop(privatekey)
+        nonce = web3.eth.getTransactionCount(address_wallet)
+        web_hop(privatekey, nonce)
+        time.sleep(random.randint(4, 10))
 
-        time.sleep(3)
+        for swap in swaps_1inch_sell:
+            amount_to_swap = swap['amount']
+            to_token_address = swap['address']
+            to_symbol = swap['symbol']
+            tx_cost.append(amount_to_swap)
+            inch_swap_sell(privatekey, amount_to_swap, to_token_address, to_symbol) 
+            time.sleep(random.randint(4, 10))
 
      
