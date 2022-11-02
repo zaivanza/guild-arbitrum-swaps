@@ -127,6 +127,7 @@ def inch_swap_sell(privatekey, amount_to_swap, fromTokenAddress, to_symbol):
         amount = intToDecimal(amount_to_swap, 18) 
 
         inch_swap_approve(privatekey, amount, fromTokenAddress, to_symbol)
+        time.sleep(random.randint(4, 10))
 
         _1inchurl = f'https://api.1inch.io/v4.0/42161/swap?fromTokenAddress={fromTokenAddress}&toTokenAddress={to_token_address}&amount={amount}&fromAddress={address_wallet}&slippage=3'
         json_data = get_api_call_data(_1inchurl)
