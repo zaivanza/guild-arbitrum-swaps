@@ -131,9 +131,6 @@ def inch_swap_sell(privatekey, amount_to_swap, fromTokenAddress, to_symbol):
         _1inchurl = f'https://api.1inch.io/v4.0/42161/swap?fromTokenAddress={fromTokenAddress}&toTokenAddress={to_token_address}&amount={amount}&fromAddress={address_wallet}&slippage=3'
         json_data = get_api_call_data(_1inchurl)
 
-        with open("order_book.json", "w") as file:
-            json.dump(json_data, file, indent=4, ensure_ascii=False)
-
         nonce = web3.eth.getTransactionCount(address_wallet)
         tx = json_data['tx']
         tx['nonce'] = nonce
