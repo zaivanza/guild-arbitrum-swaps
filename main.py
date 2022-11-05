@@ -489,14 +489,6 @@ swaps_1inch = [
     {'address': '0xC74fE4c715510Ec2F8C61d70D397B32043F55Abe',
     'symbol': 'MYC',
     'amount': round(random.uniform(0.0000100, 0.0000115), 8)},
-
-    {'address': '0xd3f1Da62CAFB7E7BC6531FF1ceF6F414291F03D3',
-    'symbol': 'DBL',
-    'amount': round(random.uniform(0.00100, 0.00105), 8)},
-
-    {'address': '0x289ba1701C2F088cf0faf8B3705246331cB8A839',
-    'symbol': 'LPT',
-    'amount': round(random.uniform(0.00100, 0.00105), 8)},
 ]
 
 swaps_1inch_sell = [
